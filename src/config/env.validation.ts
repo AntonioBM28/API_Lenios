@@ -57,4 +57,9 @@ export const envValidationSchema = Joi.object({
     then: Joi.required(),
     otherwise: Joi.optional(),
   }),
+
+  // Groq (LLM gratuito, compatible con la API de OpenAI) — features de IA
+  // del panel público: buscador inteligente del menú y "Sugerencia del
+  // Chef". Se obtiene gratis en https://console.groq.com/keys.
+  GROQ_API_KEY: Joi.string().required(),
 });

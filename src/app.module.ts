@@ -8,6 +8,7 @@ import {
   supabaseConfig,
   whatsappConfig,
   authConfig,
+  aiConfig,
 } from './config/app.config';
 import { envValidationSchema } from './config/env.validation';
 
@@ -24,6 +25,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { BusinessHoursModule } from './modules/business-hours/business-hours.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
+import { AiModule } from './modules/ai/ai.module';
 
 /**
  * AppModule – Módulo raíz de la aplicación Leños Rellenos API.
@@ -46,6 +48,7 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
         supabaseConfig,
         whatsappConfig,
         authConfig,
+        aiConfig,
       ],
       validationSchema: envValidationSchema,
       validationOptions: {
@@ -66,6 +69,7 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
     OrdersModule,
     BusinessHoursModule,
     AuthModule,
+    AiModule,
   ],
 })
 export class AppModule {}
