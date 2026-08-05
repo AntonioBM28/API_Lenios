@@ -22,6 +22,9 @@ export interface CreateOrderInput {
   metodoEnvio?: string;
   observaciones?: string;
   consentimientoAceptado: boolean;
+  /** Coordenadas fijadas a mano por el cliente en el mapa (MapPicker, opcional). */
+  entregaLat?: number;
+  entregaLon?: number;
 }
 
 export interface CreateOrderResult {

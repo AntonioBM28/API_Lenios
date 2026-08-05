@@ -67,6 +67,8 @@ export class OrdersController {
         metodoEnvio: dto.metodoEnvio,
         observaciones: dto.observaciones,
         consentimientoAceptado: dto.consentimientoAceptado,
+        entregaLat: dto.entregaLat,
+        entregaLon: dto.entregaLon,
       },
       ctx.ip,
     );
