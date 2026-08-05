@@ -11,9 +11,11 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import { Sanitize } from '../../../../common/decorators/sanitize.decorator';
 
 export class CreateProductDto {
   @ApiProperty({ example: 'Leño Sabor Salchicha', maxLength: 100 })
+  @Sanitize()
   @IsString()
   @MinLength(1)
   nombre!: string;
@@ -22,6 +24,7 @@ export class CreateProductDto {
     example:
       'Jugosa salchicha artesanal con queso oaxaca, jalapeños y mostaza dijon.',
   })
+  @Sanitize()
   @IsString()
   @IsNotEmpty()
   descripcion!: string;
