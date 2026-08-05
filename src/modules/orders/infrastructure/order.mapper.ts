@@ -30,6 +30,8 @@ export class OrderMapper {
       consentimientoAceptado: orm.consentimientoAceptado,
       consentimientoFecha: orm.consentimientoFecha,
       fechaPedido: orm.fechaPedido,
+      entregaLat: orm.entregaLat,
+      entregaLon: orm.entregaLon,
     });
   }
 }

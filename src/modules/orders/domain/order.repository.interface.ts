@@ -20,6 +20,8 @@ export interface CreateOrderData {
   observaciones?: string | null;
   consentimientoAceptado: boolean;
   consentimientoFecha: Date;
+  entregaLat?: number | null;
+  entregaLon?: number | null;
 }
 
 export interface OrderFilters {

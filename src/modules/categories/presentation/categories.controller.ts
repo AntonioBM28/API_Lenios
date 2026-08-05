@@ -9,15 +9,9 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AdminGuard } from '../../auth/presentation/guards/admin.guard';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AdminProtected } from '../../../common/decorators/admin-protected.decorator';
 import { ListCategoriesUseCase } from '../application/use-cases/list-categories.use-case';
 import { CreateCategoryUseCase } from '../application/use-cases/create-category.use-case';
 import { UpdateCategoryUseCase } from '../application/use-cases/update-category.use-case';
@@ -47,8 +41,7 @@ export class CategoriesController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({ summary: 'Crea una nueva categoría' })
   @ApiResponse({ status: 201, type: CategoryResponseDto })
   async create(@Body() dto: CreateCategoryDto): Promise<CategoryResponseDto> {
@@ -57,8 +50,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({ summary: 'Actualiza una categoría existente' })
   @ApiResponse({ status: 200, type: CategoryResponseDto })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada' })
@@ -71,8 +63,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Elimina una categoría' })
   @ApiResponse({ status: 204, description: 'Categoría eliminada' })

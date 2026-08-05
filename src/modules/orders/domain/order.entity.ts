@@ -45,6 +45,8 @@ export interface OrderProps {
   consentimientoAceptado: boolean;
   consentimientoFecha: Date | null;
   fechaPedido: Date;
+  entregaLat: number | null;
+  entregaLon: number | null;
 }
 
 /**
@@ -54,6 +56,11 @@ export interface OrderProps {
  * cliente aceptó explícitamente el Aviso de Privacidad antes de que sus
  * datos se transfirieran a WhatsApp (Transferencias de Datos) — se validan
  * y persisten en CreateOrderUseCase, nunca se infieren después.
+ *
+ * `entregaLat`/`entregaLon` son el resultado (opcional) de geocodificar
+ * `cliente.ubicacion` vía el servicio de terceros Nominatim al crear el
+ * pedido (ver Geocoder en geocoder.interface.ts). Quedan en null si la
+ * dirección no se pudo geocodificar — nunca bloquean el pedido.
  */
 export class Order {
   readonly id: string;
@@ -66,6 +73,8 @@ export class Order {
   readonly consentimientoAceptado: boolean;
   readonly consentimientoFecha: Date | null;
   readonly fechaPedido: Date;
+  readonly entregaLat: number | null;
+  readonly entregaLon: number | null;
 
   constructor(props: OrderProps) {
     this.id = props.id;
@@ -78,5 +87,7 @@ export class Order {
     this.consentimientoAceptado = props.consentimientoAceptado;
     this.consentimientoFecha = props.consentimientoFecha;
     this.fechaPedido = props.fechaPedido;
+    this.entregaLat = props.entregaLat;
+    this.entregaLon = props.entregaLon;
   }
 }

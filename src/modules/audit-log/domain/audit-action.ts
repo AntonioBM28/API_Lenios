@@ -13,7 +13,8 @@ export type AuditAction =
   | 'PRODUCT_UPDATED'
   | 'PRODUCT_DELETED'
   | 'BUSINESS_HOURS_UPDATED'
-  | 'WHATSAPP_TRANSFER';
+  | 'WHATSAPP_TRANSFER'
+  | 'DELIVERY_GEOCODED';
 
 export const AUDIT_ACTIONS: AuditAction[] = [
   'ADMIN_LOGIN_SUCCESS',
@@ -26,6 +27,7 @@ export const AUDIT_ACTIONS: AuditAction[] = [
   'PRODUCT_DELETED',
   'BUSINESS_HOURS_UPDATED',
   'WHATSAPP_TRANSFER',
+  'DELIVERY_GEOCODED',
 ];
 
 /**

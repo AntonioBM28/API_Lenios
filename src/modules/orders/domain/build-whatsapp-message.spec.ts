@@ -32,6 +32,8 @@ function makeOrder(): Order {
     consentimientoAceptado: true,
     consentimientoFecha: new Date('2026-01-01'),
     fechaPedido: new Date('2026-01-01'),
+    entregaLat: null,
+    entregaLon: null,
   });
 }
 

@@ -54,6 +54,8 @@ export class TypeOrmOrderRepository implements OrderRepository {
       observaciones: data.observaciones ?? null,
       consentimientoAceptado: data.consentimientoAceptado,
       consentimientoFecha: data.consentimientoFecha,
+      entregaLat: data.entregaLat ?? null,
+      entregaLon: data.entregaLon ?? null,
     });
     const savedOrder = await this.orderRepo.save(orderEntity);
 
@@ -89,6 +91,8 @@ export class TypeOrmOrderRepository implements OrderRepository {
       consentimientoAceptado: savedOrder.consentimientoAceptado,
       consentimientoFecha: savedOrder.consentimientoFecha,
       fechaPedido: savedOrder.fechaPedido,
+      entregaLat: savedOrder.entregaLat,
+      entregaLon: savedOrder.entregaLon,
     });
   }
 
