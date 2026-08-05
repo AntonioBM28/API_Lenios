@@ -9,6 +9,8 @@ import { TypeOrmCustomerRepository } from './infrastructure/typeorm-customer.rep
 import { TypeOrmOrderRepository } from './infrastructure/typeorm-order.repository';
 import { CUSTOMER_REPOSITORY } from './domain/customer.repository.interface';
 import { ORDER_REPOSITORY } from './domain/order.repository.interface';
+import { GEOCODER } from './domain/geocoder.interface';
+import { NominatimGeocoderService } from './infrastructure/nominatim-geocoder.service';
 import { CreateOrderUseCase } from './application/use-cases/create-order.use-case';
 import { ListOrdersUseCase } from './application/use-cases/list-orders.use-case';
 import { GetOrderByIdUseCase } from './application/use-cases/get-order-by-id.use-case';
@@ -36,6 +38,7 @@ import { OrdersController } from './presentation/orders.controller';
   providers: [
     { provide: ORDER_REPOSITORY, useClass: TypeOrmOrderRepository },
     { provide: CUSTOMER_REPOSITORY, useClass: TypeOrmCustomerRepository },
+    { provide: GEOCODER, useClass: NominatimGeocoderService },
     CreateOrderUseCase,
     ListOrdersUseCase,
     GetOrderByIdUseCase,

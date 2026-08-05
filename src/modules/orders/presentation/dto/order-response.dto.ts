@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Order } from '../../domain/order.entity';
 import { EstadoPedido } from '../../domain/estado-pedido';
 
@@ -46,6 +46,22 @@ export class OrderResponseDto {
   @ApiProperty({ example: '2026-08-04T16:35:36.435Z' })
   fecha!: string;
 
+  @ApiPropertyOptional({
+    example: 19.4326,
+    nullable: true,
+    description:
+      'Latitud de "direccion" resuelta vía Nominatim (OpenStreetMap) al crear el pedido. ' +
+      'null si la geocodificación no encontró coincidencia o el servicio no respondió.',
+  })
+  entregaLat!: number | null;
+
+  @ApiPropertyOptional({
+    example: -99.1332,
+    nullable: true,
+    description: 'Longitud correspondiente a entregaLat (ver descripción de entregaLat).',
+  })
+  entregaLon!: number | null;
+
   static fromDomain(order: Order): OrderResponseDto {
     const dto = new OrderResponseDto();
     dto.id = order.id;
@@ -63,6 +79,8 @@ export class OrderResponseDto {
     dto.total = order.total;
     dto.estado = order.estado;
     dto.fecha = order.fechaPedido.toISOString();
+    dto.entregaLat = order.entregaLat;
+    dto.entregaLon = order.entregaLon;
     return dto;
   }
 }

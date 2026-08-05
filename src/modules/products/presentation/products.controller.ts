@@ -10,15 +10,9 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AdminGuard } from '../../auth/presentation/guards/admin.guard';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AdminProtected } from '../../../common/decorators/admin-protected.decorator';
 import { ListProductsUseCase } from '../application/use-cases/list-products.use-case';
 import { GetProductByIdUseCase } from '../application/use-cases/get-product-by-id.use-case';
 import { CreateProductUseCase } from '../application/use-cases/create-product.use-case';
@@ -76,8 +70,7 @@ export class ProductsController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({ summary: 'Crea un nuevo producto' })
   @ApiResponse({ status: 201, type: ProductResponseDto })
   @ApiResponse({ status: 400, description: 'La categoría indicada no existe' })
@@ -90,8 +83,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({ summary: 'Actualiza un producto existente' })
   @ApiResponse({ status: 200, type: ProductResponseDto })
   @ApiResponse({ status: 404, description: 'Producto no encontrado' })
@@ -106,8 +98,7 @@ export class ProductsController {
   }
 
   @Patch(':id/stock')
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({
     summary: 'Ajusta el stock de un producto (panel admin)',
     description:
@@ -126,8 +117,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Elimina un producto' })
   @ApiResponse({ status: 204, description: 'Producto eliminado' })

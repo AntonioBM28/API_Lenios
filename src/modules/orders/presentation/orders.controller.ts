@@ -10,15 +10,9 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AdminGuard } from '../../auth/presentation/guards/admin.guard';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AdminProtected } from '../../../common/decorators/admin-protected.decorator';
 import { CreateOrderUseCase } from '../application/use-cases/create-order.use-case';
 import { ListOrdersUseCase } from '../application/use-cases/list-orders.use-case';
 import { GetOrderByIdUseCase } from '../application/use-cases/get-order-by-id.use-case';
@@ -73,6 +67,8 @@ export class OrdersController {
         metodoEnvio: dto.metodoEnvio,
         observaciones: dto.observaciones,
         consentimientoAceptado: dto.consentimientoAceptado,
+        entregaLat: dto.entregaLat,
+        entregaLon: dto.entregaLon,
       },
       ctx.ip,
     );
@@ -80,8 +76,7 @@ export class OrdersController {
   }
 
   @Get()
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({ summary: 'Lista pedidos para el panel admin' })
   @ApiResponse({ status: 200, type: OrderResponseDto, isArray: true })
   async findAll(
@@ -94,8 +89,7 @@ export class OrdersController {
   }
 
   @Get(':id')
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({ summary: 'Detalle completo de un pedido' })
   @ApiResponse({ status: 200, type: OrderResponseDto })
   @ApiResponse({ status: 404, description: 'Pedido no encontrado' })
@@ -107,8 +101,7 @@ export class OrdersController {
   }
 
   @Patch(':id/status')
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({ summary: 'Actualiza el estado de un pedido' })
   @ApiResponse({ status: 200, type: OrderResponseDto })
   @ApiResponse({ status: 404, description: 'Pedido no encontrado' })
@@ -126,8 +119,7 @@ export class OrdersController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Elimina un pedido' })
   @ApiResponse({ status: 204, description: 'Pedido eliminado' })

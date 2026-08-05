@@ -4,6 +4,8 @@ import {
   ArrayMinSize,
   IsBoolean,
   IsInt,
+  IsLatitude,
+  IsLongitude,
   IsOptional,
   IsPositive,
   IsString,
@@ -73,4 +75,23 @@ export class CreateOrderDto {
   })
   @IsBoolean()
   consentimientoAceptado!: boolean;
+
+  @ApiPropertyOptional({
+    example: 19.4326,
+    description:
+      'Latitud fijada a mano por el cliente en el mapa del checkout (MapPicker, opcional). ' +
+      'Si viene junto con entregaLon, el backend la usa directo y NO geocodifica `direccion` — ' +
+      'evita una llamada innecesaria a Nominatim y es más precisa que geocodificar texto libre.',
+  })
+  @IsOptional()
+  @IsLatitude()
+  entregaLat?: number;
+
+  @ApiPropertyOptional({
+    example: -99.1332,
+    description: 'Longitud correspondiente a entregaLat (ver descripción de entregaLat).',
+  })
+  @IsOptional()
+  @IsLongitude()
+  entregaLon?: number;
 }
