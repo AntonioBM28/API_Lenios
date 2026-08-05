@@ -1,0 +1,37 @@
+name: CI - Backend
+
+# Se dispara en cada Pull Request hacia develop o main (criterio de
+# Actividad 3: "workflow disparado en cada PR... instale dependencias,
+# ejecute linters y corra la suite de pruebas unitarias").
+on:
+  pull_request:
+    branches: [develop, main]
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  lint-and-test:
+    name: Lint + Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Linter (ESLint)
+        run: npm run lint
+
+      - name: Pruebas unitarias (Jest)
+        run: npm test -- --ci --coverage
+
+      - name: Build (verifica que compile)
+        run: npm run build

@@ -1,0 +1,95 @@
+# ──────────────────────────────────────────────────────────────────────────
+# Leños Rellenos — docker-compose (entorno completo: FrontEnd + BackEnd + DB)
+#
+# Levanta los 3 servicios con un solo comando:
+#   docker compose up --build
+#
+# Requisito: este repo (API_Lenios) y App_Lenios deben estar clonados como
+# carpetas HERMANAS dentro del mismo directorio padre, ej.:
+#   proyectos/
+#   ├── API_Lenios/   ← (aquí vive este docker-compose.yml)
+#   └── App_Lenios/
+#
+# Todos los valores de este archivo son de DESARROLLO LOCAL únicamente
+# (contraseñas y secretos de ejemplo). Producción usa Supabase + variables
+# de entorno reales configuradas en el proveedor de nube (Render/Railway/etc.),
+# nunca este archivo.
+# ──────────────────────────────────────────────────────────────────────────
+
+services:
+  # ── Base de datos: Postgres local (reemplaza a Supabase solo en local) ──
+  postgres:
+    image: postgres:16-alpine
+    container_name: lenos-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lenos
+      POSTGRES_PASSWORD: lenos_dev_password
+      POSTGRES_DB: lenos_rellenos
+    ports:
+      - '5432:5432'
+    volumes:
+      - lenos_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U lenos -d lenos_rellenos']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── BackEnd: NestJS API ──────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lenos-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      # DB_SSL=false porque el Postgres local no tiene SSL configurado
+      # (en producción, contra Supabase, se deja el default true).
+      DB_SSL: 'false'
+      SUPABASE_DB_HOST: postgres
+      SUPABASE_DB_PORT: 5432
+      SUPABASE_DB_USER: lenos
+      SUPABASE_DB_PASSWORD: lenos_dev_password
+      SUPABASE_DB_NAME: lenos_rellenos
+      # Requeridos por la validación de entorno (Joi) pero sin uso real
+      # todavía en el código — valores dummy, solo para desarrollo local.
+      SUPABASE_URL: https://placeholder.supabase.co
+      SUPABASE_ANON_KEY: placeholder-anon-key
+      WHATSAPP_BUSINESS_NUMBER: '524181873720'
+      # Hash bcrypt de ejemplo para el PIN "1234" — SOLO desarrollo local,
+      # nunca usar en producción (ver README: npm run hash:pin).
+      ADMIN_ACCESS_CODE_HASH: '$$2b$$12$$7Sauaw4Rd9FiHTGxhsvZou7Znvl63bs0RupRvsJaQMZewbkegm7Fi'
+      JWT_SECRET: dev-only-secret-not-for-production-please-change
+      JWT_ADMIN_EXPIRATION: 12h
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - '3000:3000'
+
+  # ── FrontEnd: React + Vite, servido como estático por Nginx ────────────
+  web:
+    build:
+      context: ../App_Lenios
+      dockerfile: Dockerfile
+      args:
+        # El navegador corre en el host, así que apunta al puerto publicado
+        # del API (no al nombre de servicio interno de Docker).
+        VITE_API_URL: http://localhost:3000
+        VITE_WHATSAPP_NUMBER: '524181873720'
+        VITE_CONTACT_EMAIL: contacto@lenosrellenos.com
+        VITE_USE_MOCK_DATA: 'false'
+        VITE_USE_COOKIE_AUTH: 'false'
+    container_name: lenos-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - '5173:80'
+
+volumes:
+  lenos_pg_data:

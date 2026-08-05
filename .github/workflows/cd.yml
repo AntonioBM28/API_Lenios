@@ -1,0 +1,43 @@
+name: CD - Backend (Render)
+
+# Se dispara al fusionar un PR en main (criterio de Actividad 3:
+# "al fusionar un PR en main, un webhook o acción de GitHub debe
+# compilar y desplegar automáticamente en un proveedor de nube").
+#
+# Requiere el secret RENDER_DEPLOY_HOOK_URL en:
+# Settings → Secrets and variables → Actions → New repository secret
+# (la URL se obtiene del dashboard de Render, en el servicio del API →
+# Settings → Deploy Hook).
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test antes de desplegar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test -- --ci
+      - run: npm run build
+
+  deploy:
+    name: Desplegar a Render
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar deploy hook de Render
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK_URL" ]; then
+            echo "::error::Falta el secret RENDER_DEPLOY_HOOK_URL en Settings > Secrets and variables > Actions"
+            exit 1
+          fi
+          curl -fsS -X POST "$DEPLOY_HOOK_URL"
