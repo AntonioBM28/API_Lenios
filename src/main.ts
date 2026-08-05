@@ -82,6 +82,7 @@ async function bootstrap(): Promise<void> {
         'Bitácora de auditoría (trazabilidad y transferencias de datos)',
       )
       .addTag('Auth', 'Autenticación del panel de administrador')
+      .addTag('AI', 'Buscador inteligente del menú y Sugerencia del Chef (Groq)')
       .addBearerAuth()
       .build();
 

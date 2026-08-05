@@ -39,3 +39,10 @@ export const authConfig = registerAs('auth', () => ({
   jwtSecret: process.env['JWT_SECRET'],
   jwtExpiration: process.env['JWT_ADMIN_EXPIRATION'] ?? '12h',
 }));
+
+export const aiConfig = registerAs('ai', () => ({
+  // Groq (https://console.groq.com) — API compatible con OpenAI, tier
+  // gratuito sin tarjeta. Usado por el módulo `ai` (buscador inteligente
+  // del menú + "Sugerencia del Chef").
+  groqApiKey: process.env['GROQ_API_KEY'],
+}));
