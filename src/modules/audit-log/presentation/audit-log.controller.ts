@@ -1,11 +1,6 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AdminGuard } from '../../auth/presentation/guards/admin.guard';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AdminProtected } from '../../../common/decorators/admin-protected.decorator';
 import { ListAuditLogsUseCase } from '../application/use-cases/list-audit-logs.use-case';
 import { ListAuditLogsQueryDto } from './dto/list-audit-logs-query.dto';
 import { AuditLogListResponseDto } from './dto/audit-log-response.dto';
@@ -22,8 +17,7 @@ export class AuditLogController {
   constructor(private readonly listAuditLogsUseCase: ListAuditLogsUseCase) {}
 
   @Get()
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({
     summary: 'Bitácora de auditoría (solo lectura)',
     description:

@@ -1,11 +1,6 @@
-import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AdminGuard } from '../../auth/presentation/guards/admin.guard';
+import { Body, Controller, Get, Put } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AdminProtected } from '../../../common/decorators/admin-protected.decorator';
 import { GetBusinessStatusUseCase } from '../application/use-cases/get-business-status.use-case';
 import { GetBusinessHoursConfigUseCase } from '../application/use-cases/get-business-hours-config.use-case';
 import { UpdateBusinessHoursConfigUseCase } from '../application/use-cases/update-business-hours-config.use-case';
@@ -49,8 +44,7 @@ export class BusinessHoursController {
   }
 
   @Put()
-  @UseGuards(AdminGuard)
-  @ApiBearerAuth()
+  @AdminProtected()
   @ApiOperation({
     summary: 'Actualiza el horario semanal y/o el cierre manual',
   })

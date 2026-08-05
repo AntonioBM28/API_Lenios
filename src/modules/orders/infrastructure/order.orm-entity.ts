@@ -54,6 +54,12 @@ export class OrderOrmEntity {
   @Column({ name: 'consentimiento_fecha', type: 'timestamptz', nullable: true })
   consentimientoFecha!: Date | null;
 
+  @Column({ name: 'entrega_lat', type: 'double precision', nullable: true })
+  entregaLat!: number | null;
+
+  @Column({ name: 'entrega_lon', type: 'double precision', nullable: true })
+  entregaLon!: number | null;
+
   @OneToMany(() => OrderItemOrmEntity, (item) => item.pedido)
   items?: OrderItemOrmEntity[];
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   ORDER_REPOSITORY,
@@ -14,11 +14,14 @@ import {
 } from '../../../products/domain/product.repository.interface';
 import { CreateOrderItemData } from '../../domain/order.repository.interface';
 import { buildWhatsappMessage } from '../../domain/build-whatsapp-message';
+import { GEOCODER, Geocoder } from '../../domain/geocoder.interface';
 import { CreateOrderInput, CreateOrderResult } from '../order.dto';
 import { RecordAuditLogUseCase } from '../../../audit-log/application/use-cases/record-audit-log.use-case';
 
 @Injectable()
 export class CreateOrderUseCase {
+  private readonly logger = new Logger(CreateOrderUseCase.name);
+
   constructor(
     @Inject(ORDER_REPOSITORY)
     private readonly orderRepository: OrderRepository,
@@ -26,6 +29,8 @@ export class CreateOrderUseCase {
     private readonly customerRepository: CustomerRepository,
     @Inject(PRODUCT_REPOSITORY)
     private readonly productRepository: ProductRepository,
+    @Inject(GEOCODER)
+    private readonly geocoder: Geocoder,
     private readonly configService: ConfigService,
     private readonly recordAuditLogUseCase: RecordAuditLogUseCase,
   ) {}
@@ -108,6 +113,19 @@ export class CreateOrderUseCase {
     // tal como se decidió en el frontend; descontar automático es una mejora
     // futura a evaluar con el negocio.
 
+    // 3.5 Geocodificar la dirección de entrega (Web Services de Terceros).
+    // Best-effort: si Nominatim falla, no responde a tiempo o no encuentra
+    // la dirección, seguimos con lat/lon en null — nunca bloqueamos el
+    // checkout por un servicio externo caído.
+    let coords: { lat: number; lon: number } | null = null;
+    try {
+      coords = await this.geocoder.geocode(input.cliente.ubicacion);
+    } catch (error) {
+      this.logger.warn(
+        `Geocodificación falló inesperadamente: ${(error as Error).message}`,
+      );
+    }
+
     // 4. Crear pedido con estado inicial 'recibido' + evidencia de consentimiento
     const consentimientoFecha = new Date();
     const order = await this.orderRepository.create({
@@ -119,6 +137,8 @@ export class CreateOrderUseCase {
       observaciones: input.observaciones ?? null,
       consentimientoAceptado: true,
       consentimientoFecha,
+      entregaLat: coords?.lat ?? null,
+      entregaLon: coords?.lon ?? null,
     });
 
     // Trazabilidad: alta del pedido. Actor 'publico' (lo crea el cliente
@@ -129,6 +149,18 @@ export class CreateOrderUseCase {
       entidadId: order.id,
       actor: 'publico',
       ip,
+    });
+
+    // Evidencia de la llamada al servicio de terceros (Nominatim): se
+    // registra tanto si hubo match como si no, para poder auditar el
+    // comportamiento de la integración sin exponer la dirección real.
+    await this.recordAuditLogUseCase.execute({
+      accion: 'DELIVERY_GEOCODED',
+      entidad: 'pedido',
+      entidadId: order.id,
+      actor: 'publico',
+      ip,
+      metadata: { geocodificado: coords !== null, proveedor: 'nominatim' },
     });
 
     // 5. Mensaje de WhatsApp + URL final
