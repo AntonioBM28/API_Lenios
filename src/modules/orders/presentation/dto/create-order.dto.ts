@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { Sanitize } from '../../../../common/decorators/sanitize.decorator';
 import {
   ArrayMinSize,
   IsBoolean,
@@ -17,6 +18,7 @@ import {
 
 export class CreateOrderClienteDto {
   @ApiProperty({ example: 'Juan Pérez' })
+  @Sanitize()
   @IsString()
   @MinLength(2)
   nombre!: string;
@@ -28,6 +30,7 @@ export class CreateOrderClienteDto {
   telefono!: string;
 
   @ApiProperty({ example: 'Av. Siempre Viva 742, Col. Centro' })
+  @Sanitize()
   @IsString()
   @MinLength(5)
   direccion!: string;
@@ -58,11 +61,13 @@ export class CreateOrderDto {
 
   @ApiPropertyOptional({ example: 'Domicilio' })
   @IsOptional()
+  @Sanitize()
   @IsString()
   metodoEnvio?: string;
 
   @ApiPropertyOptional({ example: 'Tocar el timbre, no hay número visible' })
   @IsOptional()
+  @Sanitize()
   @IsString()
   observaciones?: string;
 
