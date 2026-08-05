@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { RequestContextInterceptor } from './common/interceptors/request-context.interceptor';
@@ -12,6 +13,15 @@ async function bootstrap(): Promise<void> {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port') ?? 3000;
   const nodeEnv = configService.get<string>('app.nodeEnv') ?? 'development';
+
+  // ── Helmet ──────────────────────────────────────────────────────────────────
+  // Cabeceras HTTP de seguridad estándar (X-Content-Type-Options: nosniff,
+  // Strict-Transport-Security, X-Frame-Options, oculta X-Powered-By, etc.).
+  // contentSecurityPolicy se desactiva: esta API solo sirve JSON + Swagger UI
+  // en no-producción; una CSP genérica rompería los assets propios de Swagger
+  // (swagger-ui-express) sin aportar protección real (no servimos HTML de
+  // usuarios). El resto de cabeceras de helmet quedan activas.
+  app.use(helmet({ contentSecurityPolicy: false }));
 
   // ── CORS ────────────────────────────────────────────────────────────────────
   // Permite que el frontend React+Vite (otro origen) consuma esta API.
