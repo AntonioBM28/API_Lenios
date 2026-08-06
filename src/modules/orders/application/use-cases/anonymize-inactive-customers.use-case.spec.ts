@@ -11,6 +11,7 @@ function makeCustomer(id: string): Customer {
     telefono: '5512345678',
     ubicacion: 'Av. Siempre Viva 742',
     fechaRegistro: new Date('2025-01-01'),
+    bloqueado: false,
   });
 }
 

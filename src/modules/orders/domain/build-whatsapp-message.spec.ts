@@ -9,6 +9,7 @@ function makeOrder(): Order {
     telefono: '4181234567',
     ubicacion: 'Av. Siempre Viva 123',
     fechaRegistro: new Date('2026-01-01'),
+    bloqueado: false,
   });
 
   const items = [

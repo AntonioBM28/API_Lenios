@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   ORDER_REPOSITORY,
@@ -52,6 +58,23 @@ export class CreateOrderUseCase {
     let cliente = await this.customerRepository.findByTelefono(
       input.cliente.telefono,
     );
+
+    // Lógica ARCO: un cliente bloqueado (solicitud de Cancelación/Oposición
+    // en curso — ver BlockCustomerUseCase) no puede generar más pedidos ni
+    // que se procesen más datos suyos hasta que se resuelva su solicitud.
+    if (cliente?.bloqueado) {
+      await this.recordAuditLogUseCase.execute({
+        accion: 'ORDER_REJECTED_BLOCKED_CUSTOMER',
+        entidad: 'cliente',
+        entidadId: cliente.id,
+        actor: 'publico',
+        ip,
+      });
+      throw new ForbiddenException(
+        'No es posible procesar este pedido: hay una solicitud de protección de datos en curso para este cliente. Contacta al negocio para más información.',
+      );
+    }
+
     if (!cliente) {
       cliente = await this.customerRepository.create({
         nombre: input.cliente.nombre,

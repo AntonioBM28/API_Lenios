@@ -29,6 +29,11 @@ export class TypeOrmCustomerRepository implements CustomerRepository {
     return row ? CustomerMapper.toDomain(row) : null;
   }
 
+  async findById(id: string): Promise<Customer | null> {
+    const row = await this.repo.findOne({ where: { id } });
+    return row ? CustomerMapper.toDomain(row) : null;
+  }
+
   async create(data: CreateCustomerData): Promise<Customer> {
     const entity = this.repo.create(data);
     const saved = await this.repo.save(entity);
@@ -76,5 +81,13 @@ export class TypeOrmCustomerRepository implements CustomerRepository {
       telefono: ANONYMIZED_CUSTOMER_PHONE,
       ubicacion: ANONYMIZED_CUSTOMER_LOCATION,
     });
+  }
+
+  async block(id: string): Promise<void> {
+    await this.repo.update(id, { bloqueado: true });
+  }
+
+  async unblock(id: string): Promise<void> {
+    await this.repo.update(id, { bloqueado: false });
   }
 }

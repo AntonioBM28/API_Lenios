@@ -4,6 +4,7 @@ export interface CustomerProps {
   telefono: string;
   ubicacion: string;
   fechaRegistro: Date;
+  bloqueado: boolean;
 }
 
 /**
@@ -15,6 +16,7 @@ export class Customer {
   telefono: string;
   ubicacion: string;
   readonly fechaRegistro: Date;
+  bloqueado: boolean;
 
   constructor(props: CustomerProps) {
     this.id = props.id;
@@ -22,5 +24,6 @@ export class Customer {
     this.telefono = props.telefono;
     this.ubicacion = props.ubicacion;
     this.fechaRegistro = props.fechaRegistro;
+    this.bloqueado = props.bloqueado;
   }
 }

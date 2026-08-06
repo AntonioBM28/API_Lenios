@@ -27,6 +27,7 @@ export interface UpdateCustomerData {
  */
 export interface CustomerRepository {
   findByTelefono(telefono: string): Promise<Customer | null>;
+  findById(id: string): Promise<Customer | null>;
   create(data: CreateCustomerData): Promise<Customer>;
   update(id: string, data: UpdateCustomerData): Promise<Customer>;
 
@@ -40,4 +41,16 @@ export interface CustomerRepository {
 
   /** Sobreescribe nombre/teléfono/ubicación con los valores ANONYMIZED_*. */
   anonymize(id: string): Promise<void>;
+
+  /**
+   * Lógica ARCO — paso 1: bloquea al cliente. Mientras está bloqueado no
+   * puede generar nuevos pedidos (ver CreateOrderUseCase), lo que detiene
+   * de inmediato la recolección de más datos suyos mientras se procesa su
+   * solicitud (Oposición) o se verifica su identidad antes del paso 2
+   * (anonimizar/eliminar).
+   */
+  block(id: string): Promise<void>;
+
+  /** Revierte block() — por ejemplo si la solicitud se identifica/cancela. */
+  unblock(id: string): Promise<void>;
 }

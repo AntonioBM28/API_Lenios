@@ -17,6 +17,10 @@ import { GetOrderByIdUseCase } from './application/use-cases/get-order-by-id.use
 import { UpdateOrderStatusUseCase } from './application/use-cases/update-order-status.use-case';
 import { DeleteOrderUseCase } from './application/use-cases/delete-order.use-case';
 import { AnonymizeInactiveCustomersUseCase } from './application/use-cases/anonymize-inactive-customers.use-case';
+import { GetCustomerByIdUseCase } from './application/use-cases/get-customer-by-id.use-case';
+import { BlockCustomerUseCase } from './application/use-cases/block-customer.use-case';
+import { UnblockCustomerUseCase } from './application/use-cases/unblock-customer.use-case';
+import { AnonymizeCustomerOnRequestUseCase } from './application/use-cases/anonymize-customer-on-request.use-case';
 import { DataRetentionScheduler } from './infrastructure/data-retention.scheduler';
 import { OrdersController } from './presentation/orders.controller';
 
@@ -48,6 +52,10 @@ import { OrdersController } from './presentation/orders.controller';
     DeleteOrderUseCase,
     AnonymizeInactiveCustomersUseCase,
     DataRetentionScheduler,
+    GetCustomerByIdUseCase,
+    BlockCustomerUseCase,
+    UnblockCustomerUseCase,
+    AnonymizeCustomerOnRequestUseCase,
   ],
   exports: [ORDER_REPOSITORY, CUSTOMER_REPOSITORY],
 })
