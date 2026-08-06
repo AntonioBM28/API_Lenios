@@ -62,4 +62,8 @@ export const envValidationSchema = Joi.object({
   // del panel público: buscador inteligente del menú y "Sugerencia del
   // Chef". Se obtiene gratis en https://console.groq.com/keys.
   GROQ_API_KEY: Joi.string().required(),
+
+  // Días de retención antes de anonimizar clientes inactivos (ver
+  // AnonymizeInactiveCustomersUseCase). Opcional — 365 por defecto.
+  DATA_RETENTION_DAYS: Joi.number().integer().min(0).default(365),
 });

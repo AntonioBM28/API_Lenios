@@ -25,6 +25,14 @@ export class OrderResponseDto {
   @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id!: string;
 
+  @ApiProperty({
+    example: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    description:
+      'ID del cliente (tabla clientes) — úsalo con los endpoints ' +
+      '/orders/customers/:id para acciones ARCO (bloquear/anonimizar).',
+  })
+  clienteId!: string;
+
   @ApiProperty({ example: 'Juan Pérez' })
   cliente!: string;
 
@@ -65,6 +73,7 @@ export class OrderResponseDto {
   static fromDomain(order: Order): OrderResponseDto {
     const dto = new OrderResponseDto();
     dto.id = order.id;
+    dto.clienteId = order.cliente.id;
     dto.cliente = order.cliente.nombre;
     dto.telefono = order.cliente.telefono;
     dto.direccion = order.cliente.ubicacion;

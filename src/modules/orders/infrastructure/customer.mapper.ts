@@ -9,6 +9,7 @@ export class CustomerMapper {
       telefono: orm.telefono,
       ubicacion: orm.ubicacion,
       fechaRegistro: orm.fechaRegistro,
+      bloqueado: orm.bloqueado,
     });
   }
 }
