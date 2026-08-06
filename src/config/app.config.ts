@@ -46,3 +46,11 @@ export const aiConfig = registerAs('ai', () => ({
   // del menú + "Sugerencia del Chef").
   groqApiKey: process.env['GROQ_API_KEY'],
 }));
+
+export const privacyConfig = registerAs('privacy', () => ({
+  // Días sin pedidos activos tras los cuales un cliente se anonimiza
+  // automáticamente (ver AnonymizeInactiveCustomersUseCase). 365 por
+  // defecto — configurable para poder demostrar el mecanismo con un
+  // valor bajo (ej. 0) sin esperar un año real.
+  retentionDays: parseInt(process.env['DATA_RETENTION_DAYS'] ?? '365', 10),
+}));

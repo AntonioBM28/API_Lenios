@@ -18,11 +18,13 @@ import { ListOrdersUseCase } from '../application/use-cases/list-orders.use-case
 import { GetOrderByIdUseCase } from '../application/use-cases/get-order-by-id.use-case';
 import { UpdateOrderStatusUseCase } from '../application/use-cases/update-order-status.use-case';
 import { DeleteOrderUseCase } from '../application/use-cases/delete-order.use-case';
+import { AnonymizeInactiveCustomersUseCase } from '../application/use-cases/anonymize-inactive-customers.use-case';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { ListOrdersQueryDto } from './dto/list-orders-query.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
 import { CreateOrderResponseDto } from './dto/create-order-response.dto';
+import { DataRetentionResponseDto } from './dto/data-retention-response.dto';
 import { AuditContext } from '../../../common/decorators/audit-context.decorator';
 import { RequestAuditContext } from '../../../common/interceptors/request-context.interceptor';
 
@@ -35,6 +37,7 @@ export class OrdersController {
     private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
     private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
     private readonly deleteOrderUseCase: DeleteOrderUseCase,
+    private readonly anonymizeInactiveCustomersUseCase: AnonymizeInactiveCustomersUseCase,
   ) {}
 
   @Post()
@@ -129,5 +132,21 @@ export class OrdersController {
     @AuditContext() ctx: RequestAuditContext,
   ): Promise<void> {
     await this.deleteOrderUseCase.execute(id, ctx.ip);
+  }
+
+  @Post('data-retention/run')
+  @AdminProtected()
+  @ApiOperation({
+    summary: 'Dispara manualmente la limpieza de datos por retención (IA no; automatización de privacidad)',
+    description:
+      'Anonimiza clientes sin pedidos activos cuyo pedido más reciente rebasó el período de ' +
+      'retención (DATA_RETENTION_DAYS, 365 días por defecto). Corre automáticamente todos los ' +
+      'días vía cron (ver DataRetentionScheduler) — este endpoint solo permite demostrar/forzar ' +
+      'el mecanismo sin esperar el período completo.',
+  })
+  @ApiResponse({ status: 200, type: DataRetentionResponseDto })
+  async runDataRetention(): Promise<DataRetentionResponseDto> {
+    const result = await this.anonymizeInactiveCustomersUseCase.execute();
+    return DataRetentionResponseDto.fromResult(result);
   }
 }
