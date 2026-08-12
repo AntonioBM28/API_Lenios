@@ -68,6 +68,12 @@ services:
       JWT_SECRET: dev-only-secret-not-for-production-please-change
       JWT_ADMIN_EXPIRATION: 12h
       FRONTEND_URL: http://localhost:5173
+      # Requerido por la validación de entorno (Joi) desde que se agregó el
+      # módulo de IA (Sugerencia del Chef / buscador inteligente). Valor
+      # dummy: alcanza para que la app arranque; los endpoints /ai/* fallarán
+      # si se llaman con esta key placeholder, pero no los usamos en las
+      # pruebas de rendimiento (RE-01/RE-02 solo pegan a /products y /orders).
+      GROQ_API_KEY: gsk_dummy_key_for_local_swagger
     ports:
       - '3000:3000'
 
