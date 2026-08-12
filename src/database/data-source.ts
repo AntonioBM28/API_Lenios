@@ -26,7 +26,9 @@ export const AppDataSource = new DataSource({
   entities: [__dirname + '/../**/*.orm-entity{.ts,.js}'],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
   synchronize: false,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  // Igual que en DatabaseModule: Supabase exige SSL, pero el Postgres local
+  // de docker-compose no lo soporta. Antes esto estaba fijo en `true` y
+  // rompía `npm run migration:run` / `npm run seed` contra el entorno local.
+  ssl:
+    process.env['DB_SSL'] === 'false' ? false : { rejectUnauthorized: false },
 });
