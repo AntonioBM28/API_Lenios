@@ -157,7 +157,42 @@ infrastructure → domain (implementa las interfaces)
 
 ---
 
+## 📐 Convenciones de desarrollo
+
+### Mensajes de validación en español (class-validator)
+
+> **Regla obligatoria**: Todo decorador de `class-validator` en los DTOs de `presentation/dto/`
+> **debe** incluir su propio mensaje en español en el parámetro `{ message: '...' }`.
+> Nunca dejar el mensaje por defecto (en inglés/técnico) — ese mensaje termina mostrándose
+> tal cual al usuario final a través del sistema de toasts del frontend.
+
+**Ejemplo de referencia** → [`src/modules/ai/presentation/dto/smart-search.dto.ts`](src/modules/ai/presentation/dto/smart-search.dto.ts)
+
+```typescript
+// ✅ CORRECTO — mensaje claro, en español, sin jerga técnica
+@IsString({ message: 'La búsqueda debe ser texto' })
+@MinLength(3, { message: 'La búsqueda debe tener al menos 3 caracteres' })
+@MaxLength(200, { message: 'La búsqueda no puede superar los 200 caracteres' })
+query!: string;
+
+// ❌ INCORRECTO — el usuario ve "query must be longer than or equal to 3 characters"
+@IsString()
+@MinLength(3)
+query!: string;
+```
+
+**Tono recomendado**: claro, cercano y sin jerga técnica. Imagina que lo lee el cliente final
+o el operador del negocio, no un desarrollador.
+
+**Pipeline de errores**: el `ValidationPipe` global en `main.ts` tiene un `exceptionFactory`
+que recopila todos los mensajes fallidos y los une con `"; "` en un solo `string`, devuelto
+siempre en el campo `message` de la respuesta de error. Esto garantiza que el frontend
+siempre recibe un `string` limpio, nunca un array técnico.
+
+---
+
 ## 🧩 Patrones de diseño
+
 
 Cinco patrones presentes en el BackEnd (Actividad 3, criterio 2). Los marcados con 📝 tienen un docblock explícito (`Patrón: ...`) en el archivo de origen; los otros dos se evidencian en la estructura del código.
 

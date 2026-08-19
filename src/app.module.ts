@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 // Config
 import {
@@ -9,6 +10,7 @@ import {
   whatsappConfig,
   authConfig,
   aiConfig,
+  privacyConfig,
 } from './config/app.config';
 import { envValidationSchema } from './config/env.validation';
 
@@ -49,12 +51,18 @@ import { AiModule } from './modules/ai/ai.module';
         whatsappConfig,
         authConfig,
         aiConfig,
+        privacyConfig,
       ],
       validationSchema: envValidationSchema,
       validationOptions: {
         abortEarly: false, // muestra TODOS los errores de env, no solo el primero
       },
     }),
+
+    // ── Tareas programadas (cron) ───────────────────────────────────────────────
+    // Habilita @Cron en cualquier módulo — usado por DataRetentionScheduler
+    // (orders) para la anonimización automática de clientes inactivos.
+    ScheduleModule.forRoot(),
 
     // ── Base de datos ─────────────────────────────────────────────────────────
     DatabaseModule,
