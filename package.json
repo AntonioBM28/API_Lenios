@@ -24,7 +24,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:perf:load": "k6 run tests/performance/carga-products.js",
+    "test:perf:stress": "k6 run -e BASE_URL=http://localhost:3000 tests/performance/estres-orders.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

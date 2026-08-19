@@ -16,7 +16,7 @@ export class UpdateBusinessHoursDto {
       'Horario semanal completo: exactamente 7 entradas, una por día (0-6)',
   })
   @IsOptional()
-  @ValidateNested({ each: true })
+  @ValidateNested({ each: true, message: 'Uno o más horarios tienen datos inválidos' })
   @Type(() => HorarioDiaDto)
   @Validate(UniqueDiasConstraint)
   horarios?: HorarioDiaDto[];
@@ -25,6 +25,6 @@ export class UpdateBusinessHoursDto {
     description: 'Override manual para cerrar el negocio inesperadamente',
   })
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: 'El cierre manual debe ser verdadero o falso' })
   cierreManual?: boolean;
 }

@@ -8,7 +8,7 @@ export class ListProductsQueryDto {
     example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   })
   @IsOptional()
-  @IsUUID()
+  @IsUUID('all', { message: 'El ID de categoría no es válido' })
   categoriaId?: string;
 
   @ApiPropertyOptional({
@@ -20,6 +20,6 @@ export class ListProductsQueryDto {
   @Transform(({ value }: { value: unknown }) =>
     value === undefined ? undefined : value === 'true' || value === true,
   )
-  @IsBoolean()
+  @IsBoolean({ message: 'El valor de disponibilidad debe ser verdadero o falso' })
   disponible?: boolean;
 }
