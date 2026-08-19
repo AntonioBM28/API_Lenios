@@ -19,56 +19,56 @@ import {
 export class CreateOrderClienteDto {
   @ApiProperty({ example: 'Juan Pérez' })
   @Sanitize()
-  @IsString()
-  @MinLength(2)
+  @IsString({ message: 'El nombre debe ser texto' })
+  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
   nombre!: string;
 
   @ApiProperty({ example: '5512345678', description: 'Exactamente 10 dígitos' })
   @Matches(/^[0-9]{10}$/, {
-    message: 'telefono debe ser un número válido de 10 dígitos',
+    message: 'El teléfono debe ser un número válido de 10 dígitos',
   })
   telefono!: string;
 
   @ApiProperty({ example: 'Av. Siempre Viva 742, Col. Centro' })
   @Sanitize()
-  @IsString()
-  @MinLength(5)
+  @IsString({ message: 'La dirección debe ser texto' })
+  @MinLength(5, { message: 'La dirección debe tener al menos 5 caracteres' })
   direccion!: string;
 }
 
 export class CreateOrderItemDto {
   @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  @IsUUID()
+  @IsUUID('all', { message: 'El ID de producto no es válido' })
   productoId!: string;
 
   @ApiProperty({ example: 2, minimum: 1 })
-  @IsInt()
-  @IsPositive()
+  @IsInt({ message: 'La cantidad debe ser un número entero' })
+  @IsPositive({ message: 'La cantidad debe ser mayor a cero' })
   cantidad!: number;
 }
 
 export class CreateOrderDto {
   @ApiProperty({ type: CreateOrderClienteDto })
-  @ValidateNested()
+  @ValidateNested({ message: 'Los datos del cliente no son válidos' })
   @Type(() => CreateOrderClienteDto)
   cliente!: CreateOrderClienteDto;
 
   @ApiProperty({ type: [CreateOrderItemDto] })
-  @ValidateNested({ each: true })
+  @ValidateNested({ each: true, message: 'Uno o más productos tienen datos inválidos' })
   @Type(() => CreateOrderItemDto)
-  @ArrayMinSize(1)
+  @ArrayMinSize(1, { message: 'El pedido debe incluir al menos un producto' })
   items!: CreateOrderItemDto[];
 
   @ApiPropertyOptional({ example: 'Domicilio' })
   @IsOptional()
   @Sanitize()
-  @IsString()
+  @IsString({ message: 'El método de envío debe ser texto' })
   metodoEnvio?: string;
 
   @ApiPropertyOptional({ example: 'Tocar el timbre, no hay número visible' })
   @IsOptional()
   @Sanitize()
-  @IsString()
+  @IsString({ message: 'Las observaciones deben ser texto' })
   observaciones?: string;
 
   @ApiProperty({
@@ -78,7 +78,7 @@ export class CreateOrderDto {
       'y transferirlos vía WhatsApp al confirmar el pedido. Debe ser true — el backend ' +
       'rechaza con 400 si es false, no basta con la validación del checkbox en el frontend.',
   })
-  @IsBoolean()
+  @IsBoolean({ message: 'El consentimiento debe ser verdadero o falso' })
   consentimientoAceptado!: boolean;
 
   @ApiPropertyOptional({
@@ -89,7 +89,7 @@ export class CreateOrderDto {
       'evita una llamada innecesaria a Nominatim y es más precisa que geocodificar texto libre.',
   })
   @IsOptional()
-  @IsLatitude()
+  @IsLatitude({ message: 'La latitud de entrega no es válida' })
   entregaLat?: number;
 
   @ApiPropertyOptional({
@@ -97,6 +97,6 @@ export class CreateOrderDto {
     description: 'Longitud correspondiente a entregaLat (ver descripción de entregaLat).',
   })
   @IsOptional()
-  @IsLongitude()
+  @IsLongitude({ message: 'La longitud de entrega no es válida' })
   entregaLon?: number;
 }

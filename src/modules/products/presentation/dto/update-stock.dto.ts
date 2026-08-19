@@ -7,7 +7,7 @@ export class UpdateStockDto {
     minimum: 0,
     description: 'Nuevo valor absoluto de stock',
   })
-  @IsInt()
-  @Min(0)
+  @IsInt({ message: 'El stock debe ser un número entero' })
+  @Min(0, { message: 'El stock no puede ser negativo' })
   stock!: number;
 }

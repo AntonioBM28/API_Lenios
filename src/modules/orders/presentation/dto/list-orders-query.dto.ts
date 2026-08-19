@@ -8,6 +8,8 @@ export class ListOrdersQueryDto {
     description: 'Filtra pedidos por estado',
   })
   @IsOptional()
-  @IsIn(ESTADOS_PEDIDO)
+  @IsIn(ESTADOS_PEDIDO, {
+    message: `El estado debe ser uno de los siguientes: ${ESTADOS_PEDIDO.join(', ')}`,
+  })
   estado?: EstadoPedido;
 }

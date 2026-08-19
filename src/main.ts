@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
@@ -43,6 +43,9 @@ async function bootstrap(): Promise<void> {
   // whitelist: elimina propiedades no definidas en el DTO
   // forbidNonWhitelisted: lanza error si llegan propiedades extra
   // transform: convierte automáticamente los tipos (string → number, etc.)
+  // exceptionFactory: une TODOS los mensajes de validación en un string limpio
+  //   separado por "; ", de modo que `message` siempre llega al frontend como
+  //   string (nunca como string[]) — ver convención en smart-search.dto.ts.
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -50,6 +53,20 @@ async function bootstrap(): Promise<void> {
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,
+      },
+      exceptionFactory: (errors) => {
+        const messages = errors.flatMap((err) =>
+          Object.values(err.constraints ?? {}).concat(
+            (err.children ?? []).flatMap((child) =>
+              Object.values(child.constraints ?? {}),
+            ),
+          ),
+        );
+        return new BadRequestException({
+          statusCode: 400,
+          message: messages.join('; '),
+          error: 'Bad Request',
+        });
       },
     }),
   );
